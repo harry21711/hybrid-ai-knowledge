@@ -1,0 +1,2 @@
+The ingestion pipeline reads events from a queue, validates each record, and writes compact batches to disk. Failed records are sent to a retry log.
+Teams usually inspect the retry log first when a dashboard appears incomplete.
