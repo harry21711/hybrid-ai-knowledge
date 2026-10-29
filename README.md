@@ -1,39 +1,80 @@
 # Hybrid AI Knowledge
 
-An interactive Python learning project demonstrating how deterministic knowledge routing and local semantic retrieval can work together.
+An interactive Python prototype demonstrating how **deterministic knowledge routing** and **local semantic retrieval** can work together.
 
-## What this teaches
+The central idea: not every question needs the same retrieval strategy.
 
-The project has two routes:
+## How it works
 
-- **Deterministic OKF Route:** explicit questions about APIs, protocols, schemas, and rules are answered from Markdown files with metadata.
-- **Semantic RAG Route:** conversational or exploratory questions are matched against local notes and logs using TF-IDF vectors and cosine similarity.
+The application routes a question to one of two knowledge paths:
 
-The application exposes the route, reason, source file, answer, and similarity score so the decision is inspectable.
+### 1. Deterministic OKF-Inspired Route
+
+For questions about APIs, protocols, schemas, and rules, the system uses keyword-based routing to select structured Markdown knowledge with explicit metadata.
+
+### 2. Semantic Retrieval Route
+
+For conversational or exploratory questions, the system uses **TF-IDF vectors and cosine similarity** to retrieve the closest matching text from local knowledge files.
+
+The application exposes the selected route, routing reason, source file, answer, and—when semantic retrieval is used—similarity score.
 
 ## Architecture
 
 ```text
-User question
-         |
-         v
-    Router
-    /   \\
-   /     \\
-OKF     RAG
-route   route
-   |       |
-Markdown  Local text
-metadata  similarity
-   |       |
-   +--- Answer + evidence ---+
+              User question
+                    |
+                    v
+                  Router
+                 /      \
+                v        v
+       Structured      Semantic
+        knowledge      retrieval
+            |              |
+     Markdown +         TF-IDF +
+      metadata       cosine similarity
+            |              |
+            +------ Answer +
+                    evidence
 ```
 
-The public interface keeps this decision visible so learners can connect the question, route, source, and answer.
+## Try the live demo
+
+[**Open Hybrid AI Knowledge**](https://hybrid-ai-knowledge-krwft2mst7r8lv5sfcr.streamlit.app/)
+
+## Example questions
+
+| Question | Expected route |
+|---|---|
+| What is the authentication protocol? | Deterministic OKF-Inspired Route |
+| What fields are in the user schema? | Deterministic OKF-Inspired Route |
+| Why is the dashboard incomplete? | Semantic Retrieval Route |
+| What changed after the nightly refresh? | Semantic Retrieval Route |
+
+These examples demonstrate the intended routing behavior for the current knowledge base.
 
 ## Run locally
 
-From this directory:
+Requirements: Python and pip.
+
+```bash
+git clone https://github.com/harry21711/hybrid-ai-knowledge.git
+cd hybrid-ai-knowledge
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+**Windows PowerShell**
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS**
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies and run the app:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -41,35 +82,9 @@ python -m unittest discover -s tests -v
 streamlit run app.py
 ```
 
-The app opens on port `8501`.
+Streamlit will provide a local URL, usually `http://localhost:8501`.
 
-## Use GitHub Codespaces
-
-1. Create a new GitHub repository.
-2. Upload or push the contents of this `Version2` folder to the repository root.
-3. Open the repository on GitHub.
-4. Select **Code**, then **Codespaces**, then **Create codespace on main**.
-5. Wait for the development container to finish installing dependencies.
-6. Open the integrated terminal and run:
-
-   ```bash
-   streamlit run app.py
-   ```
-
-7. When Codespaces detects port `8501`, select **Open in Browser**.
-
-The `.devcontainer/devcontainer.json` file configures Python, installs the dependencies, forwards port `8501`, and installs the Python editor extensions.
-
-## Try these questions
-
-| Question | Expected route |
-| --- | --- |
-| What is the authentication protocol? | Deterministic OKF Route |
-| What fields are in the user schema? | Deterministic OKF Route |
-| Why is the dashboard incomplete? | Semantic RAG Route |
-| What changed after the nightly refresh? | Semantic RAG Route |
-
-## Project layout
+## Project structure
 
 ```text
 .
@@ -78,43 +93,23 @@ The `.devcontainer/devcontainer.json` file configures Python, installs the depen
 ├── okf_knowledge/
 ├── rag_knowledge/
 ├── tests/
+├── screenshots/
 ├── requirements.txt
-└── .devcontainer/devcontainer.json
+└── .devcontainer/
 ```
 
-## Public deployment
+- `app.py` — Streamlit interface
+- `hybrid_knowledge.py` — Routing and retrieval logic
+- `okf_knowledge/` — Structured Markdown knowledge files
+- `rag_knowledge/` — Local text used for semantic retrieval
+- `tests/` — Automated tests
+- `screenshots/` — Application screenshots
+- `.devcontainer/` — GitHub Codespaces development configuration
 
-Codespaces is a development environment, not permanent public hosting. Once the project works in Codespaces, deploy this repository to Streamlit Community Cloud or Hugging Face Spaces for a public demo.
+## Design principle
 
-### Streamlit Community Cloud
+> Use deterministic logic where explicitness and traceability matter, and semantic retrieval where discovery matters.
 
-1. Push or upload the completed project to a public GitHub repository.
-2. Open [share.streamlit.io](https://share.streamlit.io/).
-3. Sign in with GitHub and select **New app**.
-4. Choose the repository, branch `main`, and file `app.py`.
-5. Select **Deploy**.
-6. Wait for the dependency installation and app startup.
+This is an **educational prototype**, not a production-grade RAG platform. The structured knowledge approach is inspired by the Open Knowledge Framework (OKF) concept; this repository is not an official Google OKF implementation.
 
-Streamlit will provide a public URL similar to:
-
-```text
-https://your-app-name.streamlit.app
-```
-
-The public demo runs from the GitHub repository. When the repository changes, Streamlit can redeploy the app so visitors always use the latest version.
-
-## Screenshots
-
-The repository includes captures from the working local app:
-
-![Architecture view](screenshots/architecture.png)
-
-![Deterministic route](screenshots/okf-route.png)
-
-![Semantic route](screenshots/rag-route.png)
-
-## Learning principle
-
-> Use deterministic logic where correctness matters, and semantic retrieval where discovery matters.
-
-This is an educational prototype, not a production-grade RAG platform.
+The current prototype uses local files, keyword-based routing, TF-IDF, cosine similarity, Python, and Streamlit. It does not require a cloud AI API or an external vector database.
